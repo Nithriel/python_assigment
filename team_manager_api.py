@@ -3,7 +3,6 @@ from player import Player
 from team_manager import TeamManager
 from staff import Staff
 import json
-import os
 
 app = Flask(__name__)
 
@@ -41,39 +40,39 @@ def add_member():
     return response
 
 
-@app.route('/team_manager/employee/<id>', methods=['PUT'])
+@app.route('/team_manager/employee/<int:id>', methods=['PUT'])
 def update_member(id):
     """updates employee object based on their ID"""
     content = request.json
     try:
-        id = int(id)
-        if canucks.team_member_exist(id):
-            if content['type'] == 'staff':
-                team_member = Staff(content['first_name'], content['last_name'], content['date_of_birth'],
-                                  content['position'], content['hire_date'])
-                for team in content['previous_team']:
-                    team_member.add_previous_team(team)
-                team_member.set_id(id)
-                canucks.update(team_member)
-            elif content['type'] == 'player':
-                team_member = Player(content['first_name'], content['last_name'], content['date_of_birth'],
-                               content['position'], float(content['height']), float(content['weight']), int(content['player_number']),
-                               content['shoot'])
-                team_member.set_id(id)
-                canucks.update(team_member)
+        if id <= 0:
             response = app.response_class(
-                response="OK",
-                status=200
+                status=400
             )
+            return response
+        if content['type'] == 'staff':
+            team_member = Staff(content['first_name'], content['last_name'], content['date_of_birth'],
+                          content['position'], content['hire_date'], content['previous_team'], content['type'])
+        elif content['type'] == 'player':
+            team_member = Player(content['first_name'], content['last_name'], content['date_of_birth'],
+                            content['position'], float(content['height']), float(content['weight']),
+                            int(content['player_number']),
+                            content['shoot'], content['type'])
         else:
-            response = app.response_class(
-                response="Team Member does not exist",
-                status=404
-            )
-    except:
+            raise ValueError
+        team_member.id = id
+        canucks.update(team_member)
         response = app.response_class(
-            response="invalid input",
-            status=400
+            response="OK",
+            status=200
+        )
+    except ValueError as e:
+        status_code = 400
+        if str(e) == "Team Member does not exist":
+            status_code = 404
+        response = app.response_class(
+            response=str(e),
+            status=status_code
         )
     return response
 
@@ -86,10 +85,8 @@ def delete_member(id):
             status=400
         )
         return response
-
     try:
         canucks.delete(id)
-
         response = app.response_class(
             status=200
         )
@@ -97,7 +94,6 @@ def delete_member(id):
         status_code = 400
         if str(e) == "Team Member does not exist":
             status_code = 404
-
         response = app.response_class(
             response=str(e),
             status=status_code
@@ -106,11 +102,10 @@ def delete_member(id):
     return response
 
 
-@app.route('/team_manager/employee/<id>', methods=['GET'])
+@app.route('/team_manager/employee/<int:id>', methods=['GET'])
 def get(id):
     """returns employee object based on their ID"""
     try:
-        id = int(id)
         if canucks.get(id) is None:
             response = app.response_class(
                 response="Team Member does not exist",
