@@ -7,8 +7,8 @@ import os
 
 app = Flask(__name__)
 
-canucks = TeamManager('canucks')
-
+CANUCKS_DB = 'canucks.sqlite'
+canucks = TeamManager(CANUCKS_DB)
 
 @app.route('/team_manager/employee', methods=['POST'])
 def add_member():

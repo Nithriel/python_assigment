@@ -1,20 +1,26 @@
-import json
-import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from player import Player
 from staff import Staff
+import json
 
+STAFF_TYPE = "staff"
+PLAYER_TYPE = "player"
 
 class TeamManager:
-    def __init__(self, filepath):
+    def __init__(self, db_filename):
         """class constructor"""
-        self._entities = []
-        exists = os.path.isfile('{}.json'.format(filepath))
-        if not exists:
-            file = open("{}.json".format(filepath), "w+")
-            file.write('[]')
-            file.close()
-        self._filepath = filepath
-        self._read_members_from_file()
+        if db_filename is None or db_filename == "":
+            raise ValueError("Invalid Database File")
+
+        engine = create_engine('sqlite:///' + db_filename)
+
+        # Bind the engine to the metadata of the Base class so that the
+        # declarative can be accessed through a DBSession instance
+        Base.metadata.bind = engine
+
+        self._db_session = sessionmaker(bind=engine)
 
     def _read_members_from_file(self):
         """open and reads json file"""
