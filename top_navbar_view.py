@@ -2,13 +2,13 @@ import tkinter as tk
 
 
 class TopNavbarView(tk.Frame):
-    """create Nav Bar"""
+    """ Navigation Bar """
 
-    Player = "player"
-    Staff = "staff"
-    All = "all"
+    PAGE1 = 1
+    PAGE2 = 2
 
     def __init__(self, parent, page_callback, page_popup_callback):
+        """ Initialize the nav bar """
         tk.Frame.__init__(self, parent)
         self._parent = parent
 
@@ -18,30 +18,29 @@ class TopNavbarView(tk.Frame):
         self._create_widgets()
 
     def _create_widgets(self):
-        """creates widgets for nav bar"""
+        """ Creates the widgets for the nav bar """
+        tk.Label(self,
+                 text="Select Page:").grid(row=0, column=0)
 
-        tk.Label(self, text="Select Page:").grid(row=0, column=0)
-
-        self.current_page = tk.IntVar()
-
-        tk.Radiobutton(self,
-                       text="Player",
-                       variable=self.current_page,
-                       command=self._page_callback,
-                       value=TopNavbarView.Player).grid(row=0, column=1)
+        self.curr_page = tk.IntVar()
 
         tk.Radiobutton(self,
-                       text="Coach",
-                       variable=self.current_page,
+                       text="Staff",
+                       variable=self.curr_page,
                        command=self._page_callback,
-                       value=TopNavbarView.Staff).grid(row=0, column=2)
+                       value=TopNavbarView.PAGE1).grid(row=0, column=1)
 
         tk.Radiobutton(self,
-                       text="All",
-                       variable=self.current_page,
+                       text="Players",
+                       variable=self.curr_page,
                        command=self._page_callback,
-                       value=TopNavbarView.All).grid(row=0, column=3)
+                       value=TopNavbarView.PAGE2).grid(row=0, column=2)
 
-        self.current_page.set(TopNavbarView.Player)
+        self.curr_page.set(TopNavbarView.PAGE1)
+
+        # tk.Button(self,
+        #           text="Popup",
+        #           command=self._page_popup_callback).grid(row=0, column=3)
 
         self._page.set(1)
+

@@ -53,7 +53,7 @@ class Player(TeamMember):
         dict['id'] = self.id
         dict['first_name'] = self.first_name
         dict['last_name'] = self.last_name
-        dict['date_of_birth'] = self.date_of_birth
+        dict['date_of_birth'] = self.date_of_birth.strftime("%d/%m/%Y")
         dict['position'] = self.position
         dict['height'] = self.height
         dict['weight'] = self.weight

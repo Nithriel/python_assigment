@@ -55,9 +55,9 @@ class Staff(TeamMember):
         dict['id'] = self.id
         dict['first_name'] = self.first_name
         dict['last_name'] = self.last_name
-        dict['date_of_birth'] = self.date_of_birth
+        dict['date_of_birth'] = self.date_of_birth.strftime("%d/%m/%Y")
         dict['position'] = self.position
-        dict['hire_date'] = self.hire_date
+        dict['hire_date'] = self.hire_date.strftime("%d/%m/%Y")
         dict['previous_team'] = self.previous_team
         dict['type'] = Staff.TYPE
         return dict
