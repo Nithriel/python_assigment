@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, DateTime
 from team_member import TeamMember
 import datetime
 
@@ -7,7 +7,7 @@ class Staff(TeamMember):
 
     TYPE = 'staff'
 
-    hire_date = Column(String(10))
+    hire_date = Column(DateTime)
     previous_team = Column(String(250))
 
     def __init__(self, first_name, last_name, date_of_birth, position, hire_date, previous_team, type):

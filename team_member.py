@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 import datetime
 from base import Base
 
@@ -10,7 +10,7 @@ class TeamMember(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(250), nullable=False)
     last_name = Column(String(250), nullable=False)
-    date_of_birth = Column(String(10), nullable=False)
+    date_of_birth = Column(DateTime, nullable=False)
     position = Column(String(100), nullable=False)
     type = Column(String(10), nullable=False)
 
