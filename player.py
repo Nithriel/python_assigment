@@ -1,56 +1,64 @@
+from sqlalchemy import Column, Integer, String, Float
 from team_member import TeamMember
 
 
 class Player(TeamMember):
 
     TYPE = 'player'
-    def __init__(self, first_name, last_name, date_of_birth, position, height, weight, player_number, shoot):
+
+    height = Column(Float)
+    weight = Column(Float)
+    player_number = Column(Integer)
+    shoot = Column(String(1))
+
+    def __init__(self, first_name, last_name, date_of_birth, position, height, weight, player_number, shoot, type):
         """Constructs player's height, weight, player number and direction they shoot and validates inputs are valid"""
-        super().__init__(first_name, last_name, date_of_birth, position)
+        super().__init__(first_name, last_name, date_of_birth, position, type)
         self._validate_float("height", height)
-        self._height = height
+        self.height = height
 
         self._validate_float("weight", weight)
-        self._weight = weight
+        self.weight = weight
 
         self._validate_int("player number", player_number)
-        self._player_number = player_number
+        self.player_number = player_number
 
         self._validate_shoot(shoot)
-        self._shoot = shoot
+        self.shoot = shoot
 
-    def get_height(self):
-        """Returns height of player in feet"""
-        return self._height
 
-    def get_weight(self):
-        """Returns weight of player in pounds"""
-        return self._weight
-
-    def get_number(self):
-        """Returns player jersey number for player"""
-        return self._player_number
-
-    def get_shoot(self):
-        """Returns which hand player shoot"""
-        return self._shoot
-
-    def get_type(self):
-        """returns object under player class"""
-        return Player.TYPE
+    # def get_height(self):
+    #     """Returns height of player in feet"""
+    #     return self._height
+    #
+    # def get_weight(self):
+    #     """Returns weight of player in pounds"""
+    #     return self._weight
+    #
+    # def get_number(self):
+    #     """Returns player jersey number for player"""
+    #     return self._player_number
+    #
+    # def get_shoot(self):
+    #     """Returns which hand player shoot"""
+    #     return self._shoot
+    #
+    # def get_type(self):
+    #     """returns object under player class"""
+    #     return Player.TYPE
 
     def to_dict(self):
         """returns a dictionary representation of player"""
         dict = {}
-        dict['id'] = self.get_id()
-        dict['first_name'] = self._first_name
-        dict['last_name'] = self._last_name
-        dict['date_of_birth'] = self._date_of_birth.strftime("%d/%m/%Y")
-        dict['position'] = self._position
-        dict['height'] = self._height
-        dict['weight'] = self._weight
-        dict['player_number'] = self._player_number
-        dict['shoot'] = self._shoot
+        dict['id'] = self.id
+        dict['first_name'] = self.first_name
+        dict['last_name'] = self.last_name
+        dict['date_of_birth'] = self.date_of_birth
+        dict['position'] = self.position
+        dict['height'] = self.height
+        dict['weight'] = self.weight
+        dict['player_number'] = self.player_number
+        dict['shoot'] = self.shoot
         dict['type'] = Player.TYPE
         return dict
 

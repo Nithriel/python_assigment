@@ -17,14 +17,13 @@ def add_member():
     try:
         if content['type'] == 'staff':
             staff = Staff(content['first_name'], content['last_name'], content['date_of_birth'],
-                              content['position'], content['hire_date'])
-            for team in content['previous_team']:
-                staff.add_previous_team(team)
+                              content['position'], content['hire_date'], content['previous_team'], content['type'])
             id = canucks.add(staff)
         elif content['type'] == 'player':
             player = Player(content['first_name'], content['last_name'], content['date_of_birth'],
                                content['position'], float(content['height']), float(content['weight']), int(content['player_number']),
-                               content['shoot'])
+                               content['shoot'], content['type'])
+
             id = canucks.add(player)
         else:
             raise ValueError
@@ -79,27 +78,31 @@ def update_member(id):
     return response
 
 
-@app.route('/team_manager/employee/<id>', methods=['DELETE'])
+@app.route('/team_manager/employee/<int:id>', methods=['DELETE'])
 def delete_member(id):
     """deletes employee object based on their ID"""
-    try:
-        id = int(id)
-        if canucks.team_member_exist(id):
-            canucks.delete(id)
-            response = app.response_class(
-                status=200,
-                response="OK"
-            )
-        else:
-            response = app.response_class(
-                response="Does not exist",
-                status=404
-            )
-    except:
+    if id <= 0:
         response = app.response_class(
-            response="invalid input",
             status=400
         )
+        return response
+
+    try:
+        canucks.delete(id)
+
+        response = app.response_class(
+            status=200
+        )
+    except ValueError as e:
+        status_code = 400
+        if str(e) == "Team Member does not exist":
+            status_code = 404
+
+        response = app.response_class(
+            response=str(e),
+            status=status_code
+        )
+
     return response
 
 
@@ -107,6 +110,7 @@ def delete_member(id):
 def get(id):
     """returns employee object based on their ID"""
     try:
+        id = int(id)
         if canucks.get(id) is None:
             response = app.response_class(
                 response="Team Member does not exist",
