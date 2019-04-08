@@ -14,13 +14,8 @@ class TeamManager:
         """class constructor"""
         if db_filename is None or db_filename == "":
             raise ValueError("Invalid Database File")
-
         engine = create_engine('sqlite:///' + db_filename)
-
-        # Bind the engine to the metadata of the Base class so that the
-        # declarative can be accessed through a DBSession instance
         Base.metadata.bind = engine
-
         self._db_session = sessionmaker(bind=engine)
 
     def add(self, object):
