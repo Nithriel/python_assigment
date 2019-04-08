@@ -1,12 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from base import Base
 
 from player import Player
 from staff import Staff
-import json
+from team_member import TeamMember
 
 STAFF_TYPE = "staff"
 PLAYER_TYPE = "player"
+
 
 class TeamManager:
     def __init__(self, db_filename):
@@ -21,35 +23,6 @@ class TeamManager:
         Base.metadata.bind = engine
 
         self._db_session = sessionmaker(bind=engine)
-
-    def _read_members_from_file(self):
-        """open and reads json file"""
-        file = open("{}.json".format(self._filepath), "r")
-        content = file.read()
-        member_dict = json.loads(content)
-        for member in member_dict:
-            if member['type'] == 'player':
-                team_member = Player(member['first_name'], member['last_name'], member['date_of_birth'], member['position'],
-                       member['height'], member['weight'], member['player_number'], member['shoot'])
-                team_member.set_id(member['id'])
-            elif member['type'] == 'staff':
-                team_member = Staff(member['first_name'], member['last_name'], member['date_of_birth'], member['position'],
-                                    member['hire_date'])
-                for team in member['previous_team']:
-                    team_member.add_previous_team(team)
-                    team_member.set_id(member['id'])
-            self.add(team_member)
-        file.close()
-
-    def _write_members_to_file(self):
-        """opens and writes to json file"""
-        team_list = []
-        file = open("{}.json".format(self._filepath), "w+")
-        for team_member in self._entities:
-            team_list.append(team_member.to_dict())
-        json_string = json.dumps(team_list)
-        file.write(json_string)
-        file.close()
 
     def add(self, object):
         """Add the object to the list of objects and assign it a unique ID"""
