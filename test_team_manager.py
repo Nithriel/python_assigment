@@ -16,10 +16,10 @@ class TestTeamManager(TestCase):
     def setUp(self):
         """Set up the canucks class for test"""
         json.loads = MagicMock(return_value=[])
-        horvat = Player("Bo", "Horvat", '5/4/1995', "C", 6.0, 215, 53, 'L')
-        hay = Player("Hay", "Beagle", "16/10/1985", "RW/C", 7.0, 200, 27, 'R')
-        alex = Player("Alex", "Biega", "4/4/1988", "D", 2.0, 300, 17, 'R')
-        jim = Staff("Jim", "Benning", "29/4/1963", "General Manager", "23/05/2014")
+        horvat = Player("Bo", "Horvat", '5/4/1995', "C", 6.0, 215, 53, 'L', 'player')
+        hay = Player("Hay", "Beagle", "16/10/1985", "RW/C", 7.0, 200, 27, 'R', 'player')
+        alex = Player("Alex", "Biega", "4/4/1988", "D", 2.0, 300, 17, 'R', 'player')
+        jim = Staff("Jim", "Benning", "29/4/1963", "General Manager", "23/05/2014", 'General Manager')
         self.canucks = TeamManager(None)
         self.canucks.add(horvat)
         self.canucks.add(hay)

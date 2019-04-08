@@ -1,7 +1,7 @@
 import tkinter as tk
 from top_navbar_view import TopNavbarView
 from bottom_navbar_view import BottomNavbarView
-from player_view import PlayerView
+from player_add import PlayerView
 
 
 class TeamManagerController(tk.Frame):
