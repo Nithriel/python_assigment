@@ -27,13 +27,13 @@ class StaffDetails(tk.Frame):
         self._label_last_name = tk.Label(self, text="Last Name: " + self.last_name)
         self._label_last_name.grid(row=2, column=0, padx=20)
 
-        self._label_date_of_birth = tk.Label(self, text="Date of Birth: " + self.date_of_birth)
+        self._label_date_of_birth = tk.Label(self, text="Date of Birth (dd/mm/yyyy): " + self.date_of_birth)
         self._label_date_of_birth.grid(row=3, column=0, padx=20)
 
         self._label_position = tk.Label(self, text="Position :" + self.position)
         self._label_position.grid(row=4, column=0, padx=20)
 
-        self._label_date_hired = tk.Label(self, text="Date Hired: " + self.date_hired)
+        self._label_date_hired = tk.Label(self, text="Date Hired (dd/mm/yyyy): " + self.date_hired)
         self._label_date_hired.grid(row=5, column=0, padx=20)
 
         self._label_previous_team = tk.Label(self, text="Previous Teams: " + self.previous_team)

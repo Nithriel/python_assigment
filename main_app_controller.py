@@ -8,6 +8,7 @@ from details_staff import StaffDetails
 from details_player import PlayerDetails
 from bottom_navbar_view import BottomNavbarView
 from tkinter import messagebox as tkMessageBox
+from update_player import PlayerUpdate
 import requests
 
 
@@ -19,8 +20,10 @@ class MainAppController(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self._top_navbar = TopNavbarView(self, self._page_callback)
-        self._page1 = Page1View(self, self._page1_refresh_callback, self._page_1_delete_callback, self._page1_add_callback, self._page1_details_callback)
-        self._page2 = Page2View(self, self._page2_refresh_callback, self._page_2_delete_callback, self._page2_add_callback, self._page2_details_callback)
+        self._page1 = Page1View(self, self._page1_refresh_callback, self._page_1_delete_callback,
+                                self._page1_add_callback, self._page1_details_callback, self._page1_update_callback)
+        self._page2 = Page2View(self, self._page2_refresh_callback, self._page_2_delete_callback,
+                                self._page2_add_callback, self._page2_details_callback, self._page2_update_callback)
         self._bottom_navbar = BottomNavbarView(self, self._quit_callback)
 
         self._top_navbar.grid(row=0, columnspan=4, pady=10)
@@ -79,6 +82,88 @@ class MainAppController(tk.Frame):
     def _page2_add_callback(self):
         self._popup_win = tk.Toplevel()
         self._popup = PlayerView(self._popup_win, self._add_2_callback)
+
+    def _page1_update_callback(self):
+        self._popup_win = tk.Toplevel()
+        self._popup = StaffView(self._popup_win, self._update_1_callback)
+        index = self._page1._list_box.curselection()[0]
+        print("Index: " + str(index))
+        staff_list = self._call_requests('staff')
+        response = requests.get("http://127.0.0.1:5000/team_manager/employee/" + str(staff_list[index]['id']))
+        response_json = response.json()
+        self._popup.first_name.insert(0, response_json['first_name'])
+        self._popup.last_name.insert(0, response_json['last_name'])
+        self._popup.date_of_birth.insert(0, response_json['date_of_birth'])
+        self._popup.position.insert(0, response_json['position'])
+        self._popup.hire_date.insert(0, response_json['hire_date'])
+        self._popup.previous_team.insert(0, response_json['previous_team'])
+        self._popup.id = response_json['id']
+
+    def _page2_update_callback(self):
+        self._popup_win = tk.Toplevel()
+        self._popup = PlayerUpdate(self._popup_win, self._update_2_callback)
+        index = self._page2._list_box.curselection()[0]
+        print("Index: " + str(index))
+        player_list = self._call_requests('player')
+        response = requests.get("http://127.0.0.1:5000/team_manager/employee/" + str(player_list[index]['id']))
+        response_json = response.json()
+        self._popup.first_name.insert(0, response_json['first_name'])
+        self._popup.last_name.insert(0, response_json['last_name'])
+        self._popup.date_of_birth.insert(0, response_json['date_of_birth'])
+        self._popup.position.insert(0, response_json['position'])
+        self._popup.height.insert(0, response_json['height'])
+        self._popup.weight.insert(0, response_json['weight'])
+        self._popup.player_number.insert(0, response_json['player_number'])
+        self._popup.shoot.insert(0, response_json['shoot'])
+        self._popup.id = response_json['id']
+
+
+    def _update_1_callback(self):
+        first_name = self._popup.first_name.get()
+        last_name = self._popup.last_name.get()
+        date_of_birth = self._popup.date_of_birth.get()
+        position = self._popup.position.get()
+        hire_date = self._popup.hire_date.get()
+        previous_team = self._popup.previous_team.get()
+        staff_dict = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "date_of_birth": date_of_birth,
+            "position": position,
+            "hire_date": hire_date,
+            "previous_team": previous_team,
+            "type": "staff"
+        }
+        response = requests.put(url="http://127.0.0.1:5000/team_manager/employee/" + str(self._popup.id), json=staff_dict)
+        if response.status_code == 200:
+            self._popup_win.destroy()
+
+        self._page1_refresh_callback()
+
+    def _update_2_callback(self):
+        first_name = self._popup.first_name.get()
+        last_name = self._popup.last_name.get()
+        date_of_birth = self._popup.date_of_birth.get()
+        position = self._popup.position.get()
+        height = self._popup.height.get()
+        weight = self._popup.weight.get()
+        player_number = self._popup.player_number.get()
+        shoot = self._popup.shoot.get()
+        player_dict = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "date_of_birth": date_of_birth,
+            "position": position,
+            "height": height,
+            "weight": weight,
+            "player_number": player_number,
+            "shoot": shoot,
+            "type": "player"
+        }
+        response = requests.put(url="http://127.0.0.1:5000/team_manager/employee/" + str(self._popup.id), json=player_dict)
+        if response.status_code == 200:
+            self._popup_win.destroy()
+        self._page2_refresh_callback()
 
     def _close_popup_callback(self):
         self._popup_win.destroy()

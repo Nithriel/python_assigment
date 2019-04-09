@@ -28,20 +28,20 @@ class PlayerDetails(tk.Frame):
         self._label_last_name = tk.Label(self, text="Last Name: " + self.last_name)
         self._label_last_name.grid(row=2, column=0, padx=20)
 
-        self._label_date_of_birth = tk.Label(self, text="date_of_birth: " + self.date_of_birth)
+        self._label_date_of_birth = tk.Label(self, text="date_of_birth (dd/mm/yyyy): " + self.date_of_birth)
         self._label_date_of_birth.grid(row=3, column=0, padx=20)
 
         self._label_position = tk.Label(self, text="Position: " + self.position)
         self._label_position.grid(row=4, column=0, padx=20)
 
-        self._label_height = tk.Label(self, text="Height: " + self.height)
+        self._label_height = tk.Label(self, text="Height (cm): " + self.height)
         self._label_height.grid(row=5, column=0, padx=20)
 
-        self._label_weight = tk.Label(self, text="Weight: " + self.weight)
+        self._label_weight = tk.Label(self, text="Weight (kg): " + self.weight)
         self._label_weight.grid(row=6, column=0, padx=20)
 
         self._label_player_number = tk.Label(self, text="Player_Number: " + self.player_number)
         self._label_player_number.grid(row=7, column=0, padx=20)
 
-        self._label_shoot = tk.Label(self, text="Shoot: " + self.shoot)
+        self._label_shoot = tk.Label(self, text="Shoot (L/R): " + self.shoot)
         self._label_shoot.grid(row=8, column=0, padx=20)

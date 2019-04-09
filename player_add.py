@@ -21,22 +21,22 @@ class PlayerView(tk.Frame):
         self._label = tk.Label(self, text="Last Name:")
         self._label.grid(row=2, column=0, padx=20)
 
-        self._label = tk.Label(self, text="Date of Birth:")
+        self._label = tk.Label(self, text="Date of Birth (dd/mm/yyyy):")
         self._label.grid(row=3, column=0, padx=20)
 
         self._label = tk.Label(self, text="Position:")
         self._label.grid(row=4, column=0, padx=20)
 
-        self._label = tk.Label(self, text="Height:")
+        self._label = tk.Label(self, text="Height (cm):")
         self._label.grid(row=5, column=0, padx=20)
 
-        self._label = tk.Label(self, text="Weight:")
+        self._label = tk.Label(self, text="Weight (kg):")
         self._label.grid(row=6, column=0, padx=20)
 
         self._label = tk.Label(self, text="Player Number:")
         self._label.grid(row=7, column=0, padx=20)
 
-        self._label = tk.Label(self, text="Shoots:")
+        self._label = tk.Label(self, text="Shoots (L/R):")
         self._label.grid(row=8, column=0, padx=20)
 
         self.first_name = tk.Entry(self)
