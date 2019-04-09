@@ -19,7 +19,7 @@ class StaffDetails(tk.Frame):
         self._create_widgets()
 
     def _create_widgets(self):
-        """creates widgets for Staff"""
+        """creates widgets for staff attributes"""
 
         self._label_first_name = tk.Label(self, text="First Name: " + self.first_name)
         self._label_first_name.grid(row=1, column=0, padx=20)

@@ -54,6 +54,7 @@ class Page1View(tk.Frame):
         self._refresh_button.grid(row=7, columnspan=2, sticky=tk.E + tk.W)
 
     def set_form_data(self, data):
+        """format  display in list after entity created"""
         self._list_box.delete(0, tk.END)
         for item in data:
             self._list_box.insert(tk.END, item['first_name'] + ' ' + item['last_name'] + ', ' + item['position'])

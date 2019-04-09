@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from base import Base
-
 from player import Player
 from staff import Staff
 from team_member import TeamMember
@@ -64,7 +63,7 @@ class TeamManager:
         elif type == 'staff':
             list = session.query(Staff).filter(Staff.type == "staff").all()
         else:
-            raise ValueError
+            raise ValueError("Invalid Type for Team Member")
         session.close()
         return list
 

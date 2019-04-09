@@ -56,6 +56,7 @@ class Page2View(tk.Frame):
     # def get_form_data(self):
     #     return { "birthdate": self._entry_birthdate.get() }
     def set_form_data(self, data):
+        """formats display of entity once created into list"""
         self._list_box.delete(0, tk.END)
         for item in data:
             self._list_box.insert(tk.END, item['first_name'] + ' ' + item['last_name'] + ', ' + item['position'])

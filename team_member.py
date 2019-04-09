@@ -31,40 +31,11 @@ class TeamMember(Base):
 
         self.type = type
 
-    # def get_first_name(self):
-    #     """returns first name of team member"""
-    #     return self._first_name
-    #
-    # def get_last_name(self):
-    #     """returns last name of team member"""
-    #     return self._last_name
-    #
-    # def get_date_of_birth(self):
-    #     """returns date of birth of team member"""
-    #     return self._date_of_birth
-    #
     def get_age(self):
         """Calculate the age of the team member using today's date"""
         today = datetime.datetime.today()
         age = today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
         return age
-    #
-    # def get_position(self):
-    #     """gets position of team member"""
-    #     return self._position
-    #
-    # def get_id(self):
-    #     """"get Id number for team member"""
-    #     return self._id
-    #
-    # def get_type(self):
-    #     """get type of team member"""
-    #     raise NotImplementedError('Function implemented in the child')
-    #
-    # def set_id(self, new_id):
-    #     """set id for team member"""
-    #     self._validate_int("id", new_id)
-    #     self._id = new_id
 
     def to__dict(self):
         """returns a dictionary representation of team member"""
@@ -82,7 +53,6 @@ class TeamMember(Base):
 
         if type(str_value) != str:
             raise ValueError(display_name + " must be a string")
-
 
     @staticmethod
     def _validate_int(display_name, input_value):

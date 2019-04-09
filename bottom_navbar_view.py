@@ -13,6 +13,7 @@ class BottomNavbarView(tk.Frame):
         self._create_widgets()
 
     def _create_widgets(self):
+        """creates bottom widget"""
         self._button = tk.Button(self,
                            text="QUIT",
                            fg="red",

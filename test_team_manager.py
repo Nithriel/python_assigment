@@ -165,6 +165,11 @@ class TestTeamManager(TestCase):
 
         self.assertEqual(player1, "player")
 
+    def test_get_all_by_type_invalid(self):
+        """test invalid input for get_all_by_type"""
+        self.assertRaisesRegex(ValueError, "Invalid Type for Team Member", self.team_mgr.get_all_by_type, None)
+        self.assertRaisesRegex(ValueError, "Invalid Type for Team Member", self.team_mgr.get_all_by_type, [])
+
     def test_get_all(self):
         """test get all"""
         team_all = self.team_mgr.get_all()
