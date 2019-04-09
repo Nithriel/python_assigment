@@ -4,13 +4,13 @@ import tkinter as tk
 class Page1View(tk.Frame):
     """ Page 1 """
 
-    def __init__(self, parent, submit_callback, delete_callback, popup_callback, details_callback):
+    def __init__(self, parent, submit_callback, delete_callback, add_callback, details_callback):
         """ Initialize Page 1 """
         tk.Frame.__init__(self, parent, width=800, height=800)
         self._parent = parent
 
         self._submit_callback = submit_callback
-        self._popup_callback = popup_callback
+        self._add_callback = add_callback
         self._delete = delete_callback
         self._details_callback = details_callback
 
@@ -30,7 +30,7 @@ class Page1View(tk.Frame):
 
         self._add_button = tk.Button(self,
                                  text="Add",
-                                 command=self._popup_callback)
+                                 command=self._add_callback)
         self._add_button.grid(row=4, column=0, columnspan=1, sticky=tk.W + tk.E)
 
         self._update_button = tk.Button(self,

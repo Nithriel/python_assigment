@@ -9,7 +9,6 @@ from details_player import PlayerDetails
 from bottom_navbar_view import BottomNavbarView
 from tkinter import messagebox as tkMessageBox
 import requests
-import json
 
 
 class MainAppController(tk.Frame):
@@ -20,7 +19,7 @@ class MainAppController(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self._top_navbar = TopNavbarView(self, self._page_callback)
-        self._page1 = Page1View(self, self._page1_refresh_callback, self._page_1_delete_callback, self._page1_popup_callback, self._page1_details_callback)
+        self._page1 = Page1View(self, self._page1_refresh_callback, self._page_1_delete_callback, self._page1_add_callback, self._page1_details_callback)
         self._page2 = Page2View(self, self._page2_refresh_callback, self._page_2_delete_callback, self._page2_add_callback, self._page2_details_callback)
         self._bottom_navbar = BottomNavbarView(self, self._quit_callback)
 
@@ -73,13 +72,13 @@ class MainAppController(tk.Frame):
             self._delete_id(player_list[index]['id'])
             self._page2_refresh_callback()
 
+    def _page1_add_callback(self):
+        self._popup_win = tk.Toplevel()
+        self._popup = StaffView(self._popup_win, self._add_1_callback)
+
     def _page2_add_callback(self):
         self._popup_win = tk.Toplevel()
         self._popup = PlayerView(self._popup_win, self._add_2_callback)
-
-    def _page1_popup_callback(self):
-        self._popup_win = tk.Toplevel()
-        self._popup = StaffView(self._popup_win, self._close_popup_callback)
 
     def _close_popup_callback(self):
         self._popup_win.destroy()
@@ -107,6 +106,27 @@ class MainAppController(tk.Frame):
         self._popup_win = tk.Toplevel()
         self._popup = PlayerDetails(self._popup_win, response_json)
 
+    def _add_1_callback(self):
+        first_name = self._popup.first_name.get()
+        last_name = self._popup.last_name.get()
+        date_of_birth = self._popup.date_of_birth.get()
+        position = self._popup.position.get()
+        hire_date = self._popup.hire_date.get()
+        previous_team = self._popup.previous_team.get()
+        player_dict = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "date_of_birth": date_of_birth,
+            "position": position,
+            "hire_date": hire_date,
+            "previous_team": previous_team,
+            "type": "staff"
+        }
+        response = requests.post(url="http://127.0.0.1:5000/team_manager/employee", json=player_dict)
+        if response.status_code == 200:
+            self._popup_win.destroy()
+        self._page1_refresh_callback()
+
     def _add_2_callback(self):
         first_name = self._popup.first_name.get()
         last_name = self._popup.last_name.get()
@@ -130,6 +150,7 @@ class MainAppController(tk.Frame):
         response = requests.post(url="http://127.0.0.1:5000/team_manager/employee", json=player_dict)
         if response.status_code == 200:
             self._popup_win.destroy()
+        self._page2_refresh_callback()
 
     def _call_requests(self, entity_type):
         response = requests.get("http://127.0.0.1:5000/team_manager/employee/all/" + entity_type)
