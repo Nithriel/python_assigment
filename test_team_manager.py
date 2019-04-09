@@ -155,8 +155,15 @@ class TestTeamManager(TestCase):
 
     def test_get_all_by_type(self):
         """test get all by type"""
+        team1 = Player("Bo", "Horvat", "12/02/2000", "C", 6.0, 215, 53, "L", "player")
 
+        team1_id = self.team_mgr.add(team1)
 
+        team_all = self.team_mgr.get_all_by_type("player")
+
+        player1 = team_all[0].TYPE
+
+        self.assertEqual(player1, "player")
 
     def test_get_all(self):
         """test get all"""

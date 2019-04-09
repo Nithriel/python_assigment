@@ -65,6 +65,7 @@ class TeamManager:
             list = session.query(Staff).filter(Staff.type == "staff").all()
         else:
             raise ValueError
+        session.close()
         return list
 
     def delete(self, id):
