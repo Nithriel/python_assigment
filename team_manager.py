@@ -46,7 +46,9 @@ class TeamManager:
         team_list = []
         session = self._db_session()
         player_all = session.query(Player).filter(Player.type == "player").all()
+        print(player_all)
         staff_all = session.query(Staff).filter(Staff.type == "staff").all()
+        print(staff_all)
         for player in player_all:
             team_list.append(player)
         for staff in staff_all:

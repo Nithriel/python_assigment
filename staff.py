@@ -21,22 +21,22 @@ class Staff(TeamMember):
         self.hire_date = hire_date
 
 
-    # def get_previous_team(self):
-    #     """checks if staff has worked on previous teams and return list"""
-    #     if len(self._previous_team) == 0:
-    #         return "Not worked on previous team before"
-    #     else:
-    #         return self._previous_team
-    #
-    # def add_previous_team(self, team_name):
-    #     """add previous team to list"""
-    #     self._validate_string("team name", team_name)
-    #     self._previous_team.append(team_name)
-    #     return "{} team added to previous teams list".format(team_name)
-    #
-    # def get_hire_date(self):
-    #     """return the hire date of when staff joined the team"""
-    #     return self._hire_date
+    def get_previous_team(self):
+        """checks if staff has worked on previous teams and return list"""
+        if len(self.previous_team) == 0:
+            return "Not worked on previous team before"
+        else:
+            return self.previous_team
+
+    def add_previous_team(self, team_name):
+        """add previous team to list"""
+        self._validate_string("team name", team_name)
+        self.previous_team.append(team_name)
+        return "{} team added to previous teams list".format(team_name)
+
+    def get_hire_date(self):
+        """return the hire date of when staff joined the team"""
+        return self.hire_date
 
     def get_length_of_tenure(self):
         """return length of tenure based on date of hire to today's date"""

@@ -3,28 +3,27 @@ from player import Player
 from staff import Staff
 from team_manager import TeamManager
 import inspect
-import json
-from unittest.mock import MagicMock
-from unittest.mock import patch, mock_open
+import os
+import datetime
+
+from sqlalchemy import create_engine
+from base import Base
 
 
 class TestTeamManager(TestCase):
 
-    MOCK_JSON = []
-
-    @patch('builtins.open', mock_open(read_data=''))
     def setUp(self):
-        """Set up the canucks class for test"""
-        json.loads = MagicMock(return_value=[])
-        horvat = Player("Bo", "Horvat", '5/4/1995', "C", 6.0, 215, 53, 'L', 'player')
-        hay = Player("Hay", "Beagle", "16/10/1985", "RW/C", 7.0, 200, 27, 'R', 'player')
-        alex = Player("Alex", "Biega", "4/4/1988", "D", 2.0, 300, 17, 'R', 'player')
-        jim = Staff("Jim", "Benning", "29/4/1963", "General Manager", "23/05/2014", 'General Manager')
-        self.canucks = TeamManager(None)
-        self.canucks.add(horvat)
-        self.canucks.add(hay)
-        self.canucks.add(alex)
-        self.canucks.add(jim)
+        engine = create_engine('sqlite:///test_team_member.sqlite')
+
+        Base.metadata.create_all(engine)
+        Base.metadata.bind = engine
+
+        self.team_mgr = TeamManager('test_team_member.sqlite')
+
+        self.logPoint()
+
+    def tearDown(self):
+        os.remove('test_team_member.sqlite')
         self.logPoint()
 
     def logPoint(self):
@@ -33,61 +32,142 @@ class TestTeamManager(TestCase):
         callingFunction = inspect.stack()[1][3]
         print('in %s - %s()' % (currentTest, callingFunction))
 
-    @patch('builtins.open', mock_open(read_data=''))
-    def test_read_members_from_file(self):
-        """Test to see JSON file is being read"""
-        self.assertEqual(len(self.canucks.get_all()), 4)
-
-    @patch('builtins.open', mock_open(read_data=''))
-    def test_write_members_to_file(self):
-        """Test to see object is being written into JSON file"""
-        john = Player("John", "Bill", "16/12/1975", "RL/C", 6.8, 180, 25, 'L')
-        self.canucks.add(john)
-        self.canucks._write_members_to_file()
-        self.assertEqual(len(self.canucks.get_all()), 5)
-
     def test_add(self):
         """Test if it's adding correctly and test if it raises a error in case it's provided the wrong type"""
-        john = Staff("John", "Weisbrod", "8/11/1968", "Assistant General Manager", "23/05/2014")
-        self.canucks.add(john)
-        self.assertEqual(len(self.canucks.get_all()), 5, "Error in add function")
-        with self.assertRaises(AttributeError):
-            self.canucks.add("Not object test")
+        team1 = Player("Bo", "Horvat", "12/02/2000", "C", 6.0, 215, 53, "L", "player")
+        team2 = Staff("Jim", "Benning", "1/2/1945", "General Manager", "01/07/2015", "Boston Bruins", "staff")
 
-    def test_get(self):
-        """Test if it return the correct object and if returns none in case wrong ID is provided"""
-        hay = self.canucks.get(2)
-        self.assertEqual(hay.get_first_name(), "Alex")
-        self.assertEqual(self.canucks.get(999), None)
+        self.team_mgr.add(team1)
+        self.team_mgr.add(team2)
 
-    def test_get_all(self):
-        """Test if return the full list"""
-        self.assertEqual(len(self.canucks.get_all()), 4)
+        team_list = self.team_mgr.get_all()
+        print(team_list)
+        self.assertEqual(len(team_list), 2)
 
-    def test_get_all_by_type(self):
-        """Test if returns the proper types and if it return empty list in case the wrong type is provided"""
-        self.assertEqual(len(self.canucks.get_all_by_type("player")), 3)
-        self.assertEqual(len(self.canucks.get_all_by_type("staff")), 1)
-        self.assertEqual(self.canucks.get_all_by_type("NotExistingType"), [])
-
-    def test_delete(self):
-        """Tests if correctly deletes the object and if it raises an error in case non existent ID is provided"""
-        self.canucks.delete(3)
-        self.assertEqual(len(self.canucks.get_all()), 3)
-        with self.assertRaises(ValueError):
-            self.canucks.delete(786)
+    def test_add_invalid(self):
+        """test invalid inputs in add team member"""
+        self.assertRaisesRegex(ValueError, 'Invalid Team Member Object', self.team_mgr.add, None)
+        self.assertRaisesRegex(ValueError, 'Invalid Team Member Object', self.team_mgr.add, [])
 
     def test_update(self):
-        """Tests if it updates the object correctly and tests if returns a error if ID does not exist"""
-        new_hay = Player("Hay", "Beagles", "16/10/1985", "RW/C", 7.0, 200, 27, 'R')
-        new_hay.set_id(1)
-        self.canucks.update(new_hay)
-        obj = self.canucks.get(1)
-        self.assertEqual(obj.get_last_name(), "Beagles")
-        self.assertEqual(len(self.canucks.get_all()), 4)
+        """test update team member"""
 
-        new_player = Player("Haay", "Beaglees", "16/10/1985", "RW/C", 7.0, 200, 27, 'R')
-        new_player.set_id(55)
-        with self.assertRaises(ValueError):
-            self.canucks.update(new_player)
+        team1 = Player("Bo", "Horvat", "12/02/2000", "C", 6.0, 215, 53, "L", "player")
+        team1_id = self.team_mgr.add(team1)
 
+        datetime_format = datetime.datetime.strptime("12/02/2000", "%d/%m/%Y")
+        retrieve_updated_team = self.team_mgr.get(team1_id)
+        self.assertEqual(retrieve_updated_team.first_name, "Bo")
+        self.assertEqual(retrieve_updated_team.last_name, "Horvat")
+        self.assertEqual(retrieve_updated_team.date_of_birth, datetime_format)
+        self.assertEqual(retrieve_updated_team.position, "C")
+        self.assertEqual(retrieve_updated_team.height, 6.0)
+        self.assertEqual(retrieve_updated_team.weight, 215)
+        self.assertEqual(retrieve_updated_team.player_number, 53)
+        self.assertEqual(retrieve_updated_team.shoot, "L")
+        self.assertEqual(retrieve_updated_team.type, "player")
+
+        datetime_format = datetime.datetime.strptime("12/02/2000", "%d/%m/%Y")
+        retrieve_updated_team.first_name = "Bo"
+        retrieve_updated_team.last_name = "Horvat"
+        retrieve_updated_team.date_of_birth = datetime_format
+        retrieve_updated_team.position = "C/LW"
+        retrieve_updated_team.height = 6.1
+        retrieve_updated_team.weight = 220
+        retrieve_updated_team.player_number = 53
+        retrieve_updated_team.shoot = "L"
+        retrieve_updated_team.type = "player"
+        self.team_mgr.update(retrieve_updated_team)
+
+        retrieve_updated_team = self.team_mgr.get(team1_id)
+        self.assertEqual(retrieve_updated_team.first_name, "Bo")
+        self.assertEqual(retrieve_updated_team.last_name, "Horvat")
+        self.assertEqual(retrieve_updated_team.date_of_birth, datetime_format)
+        self.assertEqual(retrieve_updated_team.position, "C/LW")
+        self.assertEqual(retrieve_updated_team.height, 6.1)
+        self.assertEqual(retrieve_updated_team.weight, 220)
+        self.assertEqual(retrieve_updated_team.player_number, 53)
+        self.assertEqual(retrieve_updated_team.shoot, "L")
+        self.assertEqual(retrieve_updated_team.type, "player")
+
+    def test_update_invalid(self):
+        """test invalid input for update_student"""
+        self.assertRaisesRegex(ValueError, "Invalid Team Member Object", self.team_mgr.update, None)
+        self.assertRaisesRegex(ValueError, "Invalid Team Member Object", self.team_mgr.update, [])
+
+    def test_delete(self):
+        """test delete team member"""
+        team1 = Player("Bo", "Horvat", "12/02/2000", "C", 6.0, 215, 53, "L", "player")
+        team1_id = self.team_mgr.add(team1)
+
+        retrieved_team = self.team_mgr.get(team1_id)
+        self.assertIsNotNone(retrieved_team)
+
+        self.team_mgr.delete(team1_id)
+
+        retrieved_team = self.team_mgr.get(team1_id)
+        self.assertIsNone(retrieved_team)
+
+    def test_delete_invalid(self):
+        """test invalid input for update_student"""
+        self.assertRaisesRegex(ValueError, "Invalid Team Member ID", self.team_mgr.delete, None)
+        self.assertRaisesRegex(ValueError, "Invalid Team Member ID", self.team_mgr.delete, [])
+
+    def test_get(self):
+        """test get team member"""
+        team1 = Player("Bo", "Horvat", "12/02/2000", "C", 6.0, 215, 53, "L", "player")
+        team2 = Staff("Jim", "Benning", "1/2/1945", "General Manager", "01/07/2015", "Boston Bruins", "staff")
+
+        team1_id = self.team_mgr.add(team1)
+        team2_id = self.team_mgr.add(team2)
+
+        datetime_format1 = datetime.datetime.strptime("12/02/2000", "%d/%m/%Y")
+
+        retrieve_team1 = self.team_mgr.get(team1_id)
+        self.assertIsNotNone(retrieve_team1)
+        self.assertEqual(retrieve_team1.first_name, "Bo")
+        self.assertEqual(retrieve_team1.last_name, "Horvat")
+        self.assertEqual(retrieve_team1.date_of_birth, datetime_format1)
+        self.assertEqual(retrieve_team1.position, "C")
+        self.assertEqual(retrieve_team1.height, 6.0)
+        self.assertEqual(retrieve_team1.weight, 215)
+        self.assertEqual(retrieve_team1.player_number, 53)
+        self.assertEqual(retrieve_team1.shoot, "L")
+        self.assertEqual(retrieve_team1.type, "player")
+
+        datetime_format2 = datetime.datetime.strptime("1/2/1945", "%d/%m/%Y")
+        datetime_format3 = datetime.datetime.strptime("01/07/2015", "%d/%m/%Y")
+
+        retrieve_team2 = self.team_mgr.get(team2_id)
+        self.assertIsNotNone(retrieve_team2)
+        self.assertEqual(retrieve_team2.first_name, "Jim")
+        self.assertEqual(retrieve_team2.last_name, "Benning")
+        self.assertEqual(retrieve_team2.date_of_birth, datetime_format2)
+        self.assertEqual(retrieve_team2.position, "General Manager")
+        self.assertEqual(retrieve_team2.hire_date, datetime_format3)
+        self.assertEqual(retrieve_team2.previous_team, "Boston Bruins")
+        self.assertEqual(retrieve_team2.type, "staff")
+
+    def test_get_invalid(self):
+        """"test invalid input in get_student"""
+        self.assertRaisesRegex(ValueError, "Invalid Team Member ID", self.team_mgr.get, None)
+        self.assertRaisesRegex(ValueError, "Invalid Team Member ID", self.team_mgr.get, [])
+
+    def test_get_all_by_type(self):
+        """test get all by type"""
+
+
+
+    def test_get_all(self):
+        """test get all"""
+        team_all = self.team_mgr.get_all()
+        self.assertEqual(len(team_all), 0)
+
+        team1 = Player("Bo", "Horvat", "12/02/2000", "C", 6.0, 215, 53, "L", "player")
+        team2 = Staff("Jim", "Benning", "1/2/1945", "General Manager", "01/07/2015", "Boston Bruins", "staff")
+
+        team1_id = self.team_mgr.add(team1)
+        team2_id = self.team_mgr.add(team2)
+
+        team_all = self.team_mgr.get_all()
+        self.assertEqual(len(team_all), 2)
