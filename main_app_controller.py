@@ -5,9 +5,11 @@ from page2_view import Page2View
 from staff_view import StaffView
 from player_add import PlayerView
 from details_staff import StaffDetails
+from details_player import PlayerDetails
 from bottom_navbar_view import BottomNavbarView
 from tkinter import messagebox as tkMessageBox
 import requests
+import json
 
 
 class MainAppController(tk.Frame):
@@ -19,7 +21,7 @@ class MainAppController(tk.Frame):
 
         self._top_navbar = TopNavbarView(self, self._page_callback)
         self._page1 = Page1View(self, self._page1_refresh_callback, self._page_1_delete_callback, self._page1_popup_callback, self._page1_details_callback)
-        self._page2 = Page2View(self, self._page2_refresh_callback, self._page_2_delete_callback, self._page2_popup_callback, self._page1_details_callback)
+        self._page2 = Page2View(self, self._page2_refresh_callback, self._page_2_delete_callback, self._page2_add_callback, self._page2_details_callback)
         self._bottom_navbar = BottomNavbarView(self, self._quit_callback)
 
         self._top_navbar.grid(row=0, columnspan=4, pady=10)
@@ -71,9 +73,9 @@ class MainAppController(tk.Frame):
             self._delete_id(player_list[index]['id'])
             self._page2_refresh_callback()
 
-    def _page2_popup_callback(self):
+    def _page2_add_callback(self):
         self._popup_win = tk.Toplevel()
-        self._popup = PlayerView(self._popup_win, self._close_popup_callback)
+        self._popup = PlayerView(self._popup_win, self._add_2_callback)
 
     def _page1_popup_callback(self):
         self._popup_win = tk.Toplevel()
@@ -93,7 +95,41 @@ class MainAppController(tk.Frame):
         response_json = response.json()
         print(response_json)
         self._popup_win = tk.Toplevel()
-        self._popup = StaffDetails(self._popup_win, self._close_popup_callback)
+        self._popup = StaffDetails(self._popup_win, response_json)
+
+    def _page2_details_callback(self):
+        index = self._page2._list_box.curselection()[0]
+        print("Index: " + str(index))
+        player_list = self._call_requests('player')
+        response = requests.get("http://127.0.0.1:5000/team_manager/employee/" + str(player_list[index]['id']))
+        response_json = response.json()
+        print(response_json)
+        self._popup_win = tk.Toplevel()
+        self._popup = PlayerDetails(self._popup_win, response_json)
+
+    def _add_2_callback(self):
+        first_name = self._popup.first_name.get()
+        last_name = self._popup.last_name.get()
+        date_of_birth = self._popup.date_of_birth.get()
+        position = self._popup.position.get()
+        height = self._popup.height.get()
+        weight = self._popup.weight.get()
+        player_number = self._popup.player_number.get()
+        shoot = self._popup.shoot.get()
+        player_dict = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "date_of_birth": date_of_birth,
+            "position": position,
+            "height": height,
+            "weight": weight,
+            "player_number": player_number,
+            "shoot": shoot,
+            "type": "player"
+        }
+        response = requests.post(url="http://127.0.0.1:5000/team_manager/employee", json=player_dict)
+        if response.status_code == 200:
+            self._popup_win.destroy()
 
     def _call_requests(self, entity_type):
         response = requests.get("http://127.0.0.1:5000/team_manager/employee/all/" + entity_type)

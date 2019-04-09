@@ -13,7 +13,6 @@ class Page2View(tk.Frame):
         self._delete = delete_callback
         self._popup_callback = popup_callback
         self._details_callback = details_callback
-
         self._create_widgets()
 
     def _create_widgets(self):
