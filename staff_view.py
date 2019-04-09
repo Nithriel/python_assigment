@@ -4,7 +4,7 @@ import tkinter as tk
 class StaffView(tk.Frame):
     """Staff"""
 
-    def __init(self, parent, submit_callback):
+    def __init__(self, parent, submit_callback):
         """Initialize Staff"""
 
         tk.Frame.__init__(self, parent, width=800, height=800)
