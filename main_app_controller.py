@@ -2,7 +2,7 @@ import tkinter as tk
 from top_navbar_view import TopNavbarView
 from page1_view import Page1View
 from page2_view import Page2View
-from staff_view import StaffView
+from staff_add import StaffView
 from player_add import PlayerView
 from details_staff import StaffDetails
 from details_player import PlayerDetails
